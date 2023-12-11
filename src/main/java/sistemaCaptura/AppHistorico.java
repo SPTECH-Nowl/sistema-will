@@ -44,11 +44,15 @@ public class AppHistorico {
             System.out.println("|                                                                    |");
             System.out.println("|                                                                    |");
             System.out.println("+--------------------------------------------------------------------+");
-            System.out.println("Escolha uma das opções abaixo");
-            System.out.println("1 - Fazer login");
-            System.out.println("2 - Sair");
-            System.out.println("3 - Visualizar e Editar Perfil");
-            System.out.println("4 - Enviar sugestão do projeto");
+            System.out.println("╔══════════════════════╗");
+            System.out.println("║ Escolha uma opção:   ║");
+            System.out.println("╠══════════════════════╣");
+            System.out.println("║ 1-Fazer login        ║");
+            System.out.println("║ 2-Sair               ║");
+            System.out.println("║ 3-Visualizar e editar║");
+            System.out.println("║ 4-Enviar sugestão    ║");
+            System.out.println("╚══════════════════════╝");
+
             System.out.println("-".repeat(15));
 
             System.out.println("Digite um número para iniciar o sistema:");
@@ -166,23 +170,25 @@ public class AppHistorico {
             Integer opcaoUsuario;
 
             do {
-                System.out.println("-".repeat(15));
-                System.out.println("----------|| Opções do sistema ||----------");
-                System.out.println("1 - Ativar máquina");
+                System.out.println("╔════════════════════════════════════╗");
+                System.out.println("║        || Opções do Sistema ||     ║");
+                System.out.println("╠════════════════════════════════════╣");
+                System.out.println("║          1 - Ativar Máquina        ║");
+
                 if (usuario instanceof Professor) {
-                    System.out.println("2- Opções de Professor");
+                    System.out.println("║ 2 - Opções de Professor        ║");
                 }
                 if (usuario instanceof Adiministrador) {
-                    System.out.println("2- Cadastrar maquina");
+                    System.out.println("║ 2 - Opções de Professor        ║");
                 }
                 if (usuario instanceof AdmNowl) {
-                    System.out.println("2- Opções de ADM Nowl");
+                    System.out.println("║ 2 - Opções de ADM Nowl         ║");
                 }
                 if (usuario instanceof Aluno) {
-                    System.out.println("2- Opções de Aluno");
+                    System.out.println("║ 2 - Opções de Aluno            ║");
                 }
-                System.out.println("3 - Fechar sistema");
-                System.out.println("-".repeat(15));
+                System.out.println("║ 3 - Fechar Sistema                 ║");
+                System.out.println("╚════════════════════════════════════╝");
 
                 opcaoUsuario = in.nextInt();
 
