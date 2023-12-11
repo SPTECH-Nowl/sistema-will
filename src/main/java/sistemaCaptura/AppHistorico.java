@@ -35,15 +35,16 @@ public class AppHistorico {
         String motivoComeco = ":--SUCCESS: O Sistema iniciou normalmente";
         logs.adicionarMotivo(motivoComeco);
         do {
-            System.out.println("+--------------------------------------------------------------------+");
-            System.out.println("|                                                                    |");
-            System.out.println("|                    MAGISTER - Sistema Will Dantas                  |");
-            System.out.println("|                                                                    |");
-            System.out.println("|             Obrigado por usar o nosso sistema                      |");
-            System.out.println("|          Tenha um ótimo dia e uma vida incrível                    |");
-            System.out.println("|                                                                    |");
-            System.out.println("|                                                                    |");
-            System.out.println("+--------------------------------------------------------------------+");
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║                  Bem-vindo ao MAGISTER de Will Dantas        ║");
+            System.out.println("╠══════════════════════════════════════════════════════════════╣");
+            System.out.println("║               Explore todas as funcionalidades               ║");
+            System.out.println("║               do incrível Sistema Will Dantas.               ║");
+            System.out.println("║                                                              ║");
+            System.out.println("║                                                              ║");
+            System.out.println("║                Tenha uma experiência incrível!               ║");
+            System.out.println("║                                                              ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println("╔══════════════════════╗");
             System.out.println("║ Escolha uma opção:   ║");
             System.out.println("╠══════════════════════╣");
@@ -182,12 +183,12 @@ public class AppHistorico {
                     System.out.println("║ 2 - Opções de Professor        ║");
                 }
                 if (usuario instanceof AdmNowl) {
-                    System.out.println("║ 2 - Opções de ADM Nowl         ║");
+                    System.out.println("║          2 - Opções de ADM Nowl    ║");
                 }
                 if (usuario instanceof Aluno) {
                     System.out.println("║ 2 - Opções de Aluno            ║");
                 }
-                System.out.println("║ 3 - Fechar Sistema                 ║");
+                System.out.println("║          3 - Fechar Sistema        ║");
                 System.out.println("╚════════════════════════════════════╝");
 
                 opcaoUsuario = in.nextInt();
@@ -208,19 +209,23 @@ public class AppHistorico {
                             logs.adicionarMotivo(motivoMaquina);
 
                             System.out.println("-".repeat(15));
-                            System.out.println("Escolha uma máquina disponível");
+                            System.out.println(   "╔══════════════════════╗");
+                            System.out.println(   "║ Escolha uma máquina: ║");
+
 
                             for (Maquina maquina : maquinas) {
-                                System.out.println("id: " + maquina.getIdMaquina());
-                                System.out.println("nome: " + maquina.getNome());
-                                System.out.println("Sistema Operacional: " + maquina.getSO());
+                                System.out.println("╠══════════════════════╣");
+                                System.out.println("║ id: " + maquina.getIdMaquina());
+                                System.out.println("║ nome: " + maquina.getNome());
+                                System.out.println("║ Sistema Operacional: " + maquina.getSO());
                                 if (maquina.getDetalhes() != null) {
-                                    System.out.println("Detalhes: " + maquina.getDetalhes());
+                                    System.out.println("║ Detalhes: " + maquina.getDetalhes());
                                 }
                             }
 
-                            System.out.println("-".repeat(15));
-                            System.out.println("Digite o número da máquina");
+                            System.out.println("╠══════════════════════╣");
+                            System.out.println("║ Digite o número do PC║");
+                            System.out.println("╚══════════════════════╝");
                             Integer numMaquina = in.nextInt();
                             ativarMaquina(con,con2,numMaquina, histConsmRecurso);
                             numeroMaquina = numMaquina;
@@ -234,10 +239,14 @@ public class AppHistorico {
                             }
                             System.out.println("-".repeat(15));
                             for (Permissao permissao : permissaos) {
-                                System.out.println("Codigo aula: " + permissao.getNome());
+                                System.out.println("╠════════════════════════════════════╣");
+                                System.out.println("║ Código aula: " + permissao.getNome());
+                                System.out.println("╚════════════════════════════════════╝");
+
                             }
-                            System.out.println("-".repeat(15));
-                            System.out.println("Digite o código da aula");
+                            System.out.println("╠═══════════════════════╣");
+                            System.out.println("║Digite o código da aula║");
+                            System.out.println("╚═══════════════════════╝");
                             String codigoAula = leitor.nextLine();
                             histConsmRecurso.mostrarHistorico(numeroMaquina, codigoAula);
                             break;
@@ -399,13 +408,16 @@ public class AppHistorico {
     }
 
     private static void exibirMensagemDespedida() {
-        System.out.println("+---------------------------------------------------------------+");
-        System.out.println("|                            MAGISTER                           |");
-        System.out.println("|             Obrigado por usar o nosso sistema                 |");
-        System.out.println("|          Tenha um ótimo dia e uma vida incrível               |");
-        System.out.println("|                                                               |");
-        System.out.println("|                        #6D499D                                |");
-        System.out.println("+---------------------------------------------------------------+");
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║                 Até logo e volte sempre!                     ║");
+        System.out.println("╠══════════════════════════════════════════════════════════════╣");
+        System.out.println("║              Agradecemos por utilizar o Sistema Will Dantas  ║");
+        System.out.println("║          Continue explorando as incríveis funcionalidades    ║");
+        System.out.println("║            que o Sistema Will Dantas tem a oferecer.         ║");
+        System.out.println("║                                                              ║");
+        System.out.println("║                     Tenha um dia maravilhoso!                ║");
+        System.out.println("║                                                              ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
     }
 
     private static void cadastrarMaquina(JdbcTemplate con, JdbcTemplate conSer) {
