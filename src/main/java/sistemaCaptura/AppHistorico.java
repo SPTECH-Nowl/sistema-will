@@ -9,6 +9,8 @@ import sistemaCaptura.user.AdmNowl;
 import sistemaCaptura.user.Aluno;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.ArrayList;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +26,7 @@ public class AppHistorico {
 
     public static void main(String[] args) {
         JdbcTemplate con = conexao.getConexaoDoBancoMySQL();
-        JdbcTemplate conSer = conexao.getConexaoDoBancoSQLServer();
+        JdbcTemplate con2 = conexao.getConexaoDoBancoSQLServer();
         HistConsmRecurso histConsmRecurso = new HistConsmRecurso();
 
 
@@ -54,17 +56,17 @@ public class AppHistorico {
 
             switch (escolha) {
                 case 1:
-                    fazerLogin(con,conSer, histConsmRecurso, in);
+                    fazerLogin(con, con2, histConsmRecurso, in);
                     break;
                 case 2:
                     exibirMensagemDespedida();
                     histConsmRecurso.fecharSistema();
                     break;
                 case 3:
-                    visualizarEditarPerfil(con,conSer);
+                    visualizarEditarPerfil(con, con2);
                     break;
                 case 4:
-                    enviarSugestao(con,in);
+                    enviarSugestao(con, in);
                     break;
                 default:
                     System.out.println("Opção inválida");
@@ -72,7 +74,7 @@ public class AppHistorico {
         } while (escolha != 2);
     }
 
-    private static void cadastrarUsuario(JdbcTemplate con,JdbcTemplate conSer) {
+    private static void cadastrarUsuario(JdbcTemplate con, JdbcTemplate con2) {
         Scanner leitor = new Scanner(System.in);
 
         System.out.println("Digite o nome do usuário (mínimo de 3 caracteres):");
@@ -112,14 +114,13 @@ public class AppHistorico {
 
         con.update("INSERT INTO usuario (nome, email, senha, fkInstituicao, fkTipoUsuario) VALUES (?, ?, ?, ?, ?)", nome, email, senha, fkInstituicao, fkTipoUsuario);
 
-        conSer.update("INSERT INTO usuario (nome, email, senha, fkInstituicao, fkTipoUsuario) VALUES (?, ?, ?, ?, ?)", nome, email, senha, fkInstituicao, fkTipoUsuario);
-
+        con2.update("INSERT INTO usuario (nome, email, senha, fkInstituicao, fkTipoUsuario) VALUES (?, ?, ?, ?, ?)", nome, email, senha, fkInstituicao, fkTipoUsuario);
 
 
         System.out.println("Usuário cadastrado com sucesso!");
     }
 
-    private static void fazerLogin(JdbcTemplate con,JdbcTemplate conSer, HistConsmRecurso histConsmRecurso, Scanner in) {
+    private static void fazerLogin(JdbcTemplate con,JdbcTemplate con2, HistConsmRecurso histConsmRecurso, Scanner in) {
         Scanner leitor = new Scanner(System.in);
         Integer numeroMaquina = null;
         Usuario usuario;
@@ -142,7 +143,7 @@ public class AppHistorico {
             usuarios = con.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
                     new BeanPropertyRowMapper<>(Usuario.class), email, senha);
         } else {
-            usuarios = conSer.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
+            usuarios = con2.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
                     new BeanPropertyRowMapper<>(Usuario.class), email, senha);
         }
         if (usuarios.size() > 0) {
@@ -151,13 +152,13 @@ public class AppHistorico {
 
             if (usuarios.get(0).getFkTipoUsuario().equals(1)) {
                 usuario = new AdmNowl(usuarios.get(0));
-                System.out.println("Bem vindo ADM Nowl" + usuario.getNome());
+                System.out.println("Bem vindo ADM Nowl-" + usuario.getNome());
             } else if (usuarios.get(0).getFkTipoUsuario().equals(2)) {
                 usuario = new Adiministrador(usuarios.get(0));
-                System.out.println("Bem vindo ADM " + usuario.getNome());
+                System.out.println("Bem vindo ADM- " + usuario.getNome());
             } else if (usuarios.get(0).getFkTipoUsuario().equals(3)) {
                 usuario = new Professor(usuarios.get(0));
-                System.out.println("Bem vindo Professor " + usuario.getNome());
+                System.out.println("Bem vindo Professor- " + usuario.getNome());
             } else {
                 usuario = new Aluno(usuarios.get(0));
                 System.out.println("Bem vindo Usuario" + usuario.getNome());
@@ -193,7 +194,7 @@ public class AppHistorico {
                             maquinas = con.query("SELECT * FROM maquina WHERE emUso = 0 AND fkInstituicao = ?",
                                     new BeanPropertyRowMapper<>(Maquina.class), usuario.getFkInstituicao());
                         } else {
-                            maquinas = conSer.query("SELECT * FROM maquina WHERE emUso = 0 AND fkInstituicao = ?",
+                            maquinas = con2.query("SELECT * FROM maquina WHERE emUso = 0 AND fkInstituicao = ?",
                                     new BeanPropertyRowMapper<>(Maquina.class), usuario.getFkInstituicao());
                         }
                         if (maquinas.size() > 0) {
@@ -215,14 +216,14 @@ public class AppHistorico {
                             System.out.println("-".repeat(15));
                             System.out.println("Digite o número da máquina");
                             Integer numMaquina = in.nextInt();
-                            ativarMaquina(con, conSer,numMaquina, histConsmRecurso);
+                            ativarMaquina(con,con2,numMaquina, histConsmRecurso);
                             numeroMaquina = numMaquina;
                             List<Permissao> permissaos;
                             if (conexao.getDev()) {
                                 permissaos = con.query("SELECT * FROM permissao WHERE emUso = 1 AND fkUsuario =?",
                                         new BeanPropertyRowMapper<>(Permissao.class),usuario.getIdUsuario());
                             } else {
-                                permissaos = conSer.query("SELECT * FROM permissao WHERE emUso = 1 AND fkUsuario =?",
+                                permissaos = con2.query("SELECT * FROM permissao WHERE emUso = 1 AND fkUsuario =?",
                                         new BeanPropertyRowMapper<>(Permissao.class),usuario.getIdUsuario());
                             }
                             System.out.println("-".repeat(15));
@@ -243,7 +244,7 @@ public class AppHistorico {
                             ((Professor) usuario).opcaoProfessor();
                         }
                         if (usuario instanceof Adiministrador) {
-                            cadastrarMaquina(con);
+                            cadastrarMaquina(con,con2);
                         }
                         if (usuario instanceof AdmNowl) {
                             ((AdmNowl) usuario).opcaoAdmNowl();
@@ -253,7 +254,7 @@ public class AppHistorico {
                         }
                         break;
                     case 3:
-                        desativarMaquina(con, conSer,numeroMaquina);
+                        desativarMaquina(con, con2,numeroMaquina);
                         exibirMensagemDespedida();
                         histConsmRecurso.fecharSistema();// Isso encerrará o programa
                         return;
@@ -269,7 +270,10 @@ public class AppHistorico {
         }
     }
 
-    private static void ativarMaquina(JdbcTemplate con,JdbcTemplate conSer,  Integer maquinaId, HistConsmRecurso histConsmRecurso) {
+
+
+
+    private static void ativarMaquina(JdbcTemplate con, JdbcTemplate con2, Integer maquinaId, HistConsmRecurso histConsmRecurso) {
         Maquina maquina = con.queryForObject("SELECT * FROM maquina WHERE idMaquina = ? AND emUso = 0",
                 new BeanPropertyRowMapper<>(Maquina.class), maquinaId);
 
@@ -279,7 +283,7 @@ public class AppHistorico {
             con.update("UPDATE maquina SET emUso = 1 WHERE idMaquina = ?", maquinaId);
             System.out.println("Máquina ativada com sucesso: " + maquina.getNome());
 
-            conSer.update("UPDATE maquina SET emUso = 1 WHERE idMaquina = ?", maquinaId);
+            con2.update("UPDATE maquina SET emUso = 1 WHERE idMaquina = ?", maquinaId);
             System.out.println("Máquina ativada com sucesso: " + maquina.getNome());
 
         } else {
@@ -287,7 +291,7 @@ public class AppHistorico {
         }
     }
 
-    private static void desativarMaquina(JdbcTemplate con, JdbcTemplate conSer,Integer maquinaId) {
+    private static void desativarMaquina(JdbcTemplate con, JdbcTemplate conSer, Integer maquinaId) {
 
         con.update("UPDATE maquina SET emUso = 0 WHERE idMaquina = ?", maquinaId);
 
@@ -313,11 +317,19 @@ public class AppHistorico {
             senha = leitor.nextLine();
         }
 
-        List<Usuario> usuarios = con.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
+        List<Usuario> usuariosMySQL = con.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
                 new BeanPropertyRowMapper<>(Usuario.class), email, senha);
 
-        if (usuarios.size() > 0) {
-            Usuario usuario = usuarios.get(0);
+        List<Usuario> usuariosSQLServer = conSer.query("SELECT * FROM usuario WHERE email = ? AND senha = ?",
+                new BeanPropertyRowMapper<>(Usuario.class), email, senha);
+
+        if (usuariosMySQL.size() > 0 || usuariosSQLServer.size() > 0) {
+            Usuario usuario;
+            if (usuariosMySQL.size() > 0) {
+                usuario = usuariosMySQL.get(0);
+            } else {
+                usuario = usuariosSQLServer.get(0);
+            }
 
             System.out.println("Perfil do usuário:");
             System.out.println("Nome: " + usuario.getNome());
@@ -390,7 +402,7 @@ public class AppHistorico {
         System.out.println("+---------------------------------------------------------------+");
     }
 
-    private static void cadastrarMaquina(JdbcTemplate con) {
+    private static void cadastrarMaquina(JdbcTemplate con, JdbcTemplate conSer) {
         Scanner leitor = new Scanner(System.in);
 
         System.out.println("Digite o nome da máquina:");
@@ -405,104 +417,85 @@ public class AppHistorico {
         System.out.println("Digite o ID da instituição (fkInstituicao):");
         int fkInstituicao = leitor.nextInt();
 
-        // Cadastrar a máquina no banco de dados
-        if (conexao.getDev()) {
-            con.update("INSERT INTO maquina (nome, SO, emUso, fkInstituicao) VALUES (?, ?, ?, ?)", nomeMaquina, sistemaOperacional, emUso, fkInstituicao);
-        } else {
-            con.update("INSERT INTO maquina (nome, SO, emUso, fkInstituicao) VALUES (?, ?, ?, ?)", nomeMaquina, sistemaOperacional, emUso, fkInstituicao);
-        }
+        // Cadastrar a máquina no banco de dados MySQL
+        con.update("INSERT INTO maquina (nome, SO, emUso, fkInstituicao) VALUES (?, ?, ?, ?)", nomeMaquina, sistemaOperacional, emUso, fkInstituicao);
 
-        Integer idMaquina;
-        if (conexao.getDev()) {
-            idMaquina = con.queryForObject("SELECT MAX(idMaquina) FROM maquina", Integer.class);
-        } else {
-            idMaquina = con.queryForObject("SELECT MAX(idMaquina) FROM maquina", Integer.class);
-        }
-        // Recuperar o ID da máquina recém-cadastrada
+        // Cadastrar a máquina no banco de dados SQL Server
+        conSer.update("INSERT INTO maquina (nome, SO, emUso, fkInstituicao) VALUES (?, ?, ?, ?)", nomeMaquina, sistemaOperacional, emUso, fkInstituicao);
 
-        // Cadastrar hardware e componente para a máquina
-        cadastrarHardwareEComponente(con, idMaquina, 2);
-        cadastrarHardwareEComponente(con, idMaquina, 3);
-        cadastrarHardwareEComponente(con, idMaquina, 1);
+        Integer idMaquinaMySQL;
+        Integer idMaquinaSQLServer;
+
+        // Recuperar o ID da máquina recém-cadastrada do MySQL
+        idMaquinaMySQL = con.queryForObject("SELECT MAX(idMaquina) FROM maquina", Integer.class);
+
+        // Recuperar o ID da máquina recém-cadastrada do SQL Server
+        idMaquinaSQLServer = conSer.queryForObject("SELECT MAX(idMaquina) FROM maquina", Integer.class);
+
+        // Cadastrar hardware e componente para a máquina nas duas fontes de dados
+        cadastrarHardwareEComponente(con, conSer, idMaquinaMySQL, 2);
+        cadastrarHardwareEComponente(con, conSer, idMaquinaMySQL, 3);
+        cadastrarHardwareEComponente(con, conSer, idMaquinaMySQL, 1);
 
         System.out.println("Máquina cadastrada com sucesso!");
     }
 
-    private static Integer cadastrarTipoHardware(JdbcTemplate con) {
+
+    private static Integer cadastrarTipoHardware(JdbcTemplate con, JdbcTemplate conSer) {
         Scanner leitor = new Scanner(System.in);
 
         System.out.println("Digite o nome do tipo de hardware (ex: CPU, GPU, Memória):");
         String tipoHardware = leitor.nextLine();
 
-        // Cadastrar o tipo de hardware no banco de dados
-        if (conexao.getDev()) {
-            con.update("INSERT INTO tipoHardware (tipo) VALUES (?)", tipoHardware);
-        } else {
-            con.update("INSERT INTO tipoHardware (tipo) VALUES (?)", tipoHardware);
-        }
-        // Recuperar o ID do tipo de hardware recém-cadastrado
-        if (conexao.getDev()) {
-            return con.queryForObject("SELECT MAX(idTipoHardware) FROM tipoHardware", Integer.class);
-        } else {
-            return con.queryForObject("SELECT MAX(idTipoHardware) FROM tipoHardware", Integer.class);
-        }
+        // Cadastrar o tipo de hardware no banco de dados MySQL
+        con.update("INSERT INTO tipoHardware (tipo) VALUES (?)", tipoHardware);
+
+        // Cadastrar o tipo de hardware no banco de dados SQL Server
+        conSer.update("INSERT INTO tipoHardware (tipo) VALUES (?)", tipoHardware);
+
+        // Recuperar o ID do tipo de hardware recém-cadastrado do MySQL
+        Integer idTipoHardwareMySQL = con.queryForObject("SELECT MAX(idTipoHardware) FROM tipoHardware", Integer.class);
+
+        // Recuperar o ID do tipo de hardware recém-cadastrado do SQL Server
+        Integer idTipoHardwareSQLServer = conSer.queryForObject("SELECT MAX(idTipoHardware) FROM tipoHardware", Integer.class);
+
+        // Retornar o ID do tipo de hardware
+        return idTipoHardwareMySQL; // Você pode escolher retornar o ID do MySQL ou SQL Server, dependendo da sua lógica.
+
     }
 
-    private static void cadastrarHardwareEComponente(JdbcTemplate con, Integer idMaquina, Integer tipo) {
+    private static void cadastrarHardwareEComponente(JdbcTemplate con, JdbcTemplate conSer, Integer idMaquina, Integer tipo) {
         Scanner leitor = new Scanner(System.in);
 
         // Cadastrar hardware
-        if (tipo == 2) {
-            System.out.println("Digite o fabricante do hardware(CPU):");
-        } else if (tipo == 3) {
-            System.out.println("Digite o fabricante do hardware(RAM):");
-        } else if (tipo == 1) {
-            System.out.println("Digite o fabricante do hardware(Disco):");
-        }
+        System.out.println("Digite o fabricante do hardware:");
         String fabricante = leitor.nextLine();
-        if (tipo == 2) {
-            System.out.println("Digite o modelo do hardware(CPU):");
-        } else if (tipo == 3) {
-            System.out.println("Digite o modelo do hardware(RAM):");
-        } else if (tipo == 1) {
-            System.out.println("Digite o modelo do hardware(Disco):");
-        }
+
+        System.out.println("Digite o modelo do hardware:");
         String modelo = leitor.nextLine();
-        if (tipo == 2) {
-            System.out.println("Digite a capacidade do hardware(CPU):");
-        } else if (tipo == 3) {
-            System.out.println("Digite a capacidade do hardware(RAM):");
-        } else if (tipo == 1) {
-            System.out.println("Digite a capacidade do hardware(Disco):");
-        }
+
+        System.out.println("Digite a capacidade do hardware:");
         double capacidade = leitor.nextDouble();
         leitor.nextLine(); // Consumir a quebra de linha
-        if (tipo == 2) {
-            System.out.println("Digite a especificidade do hardware(CPU):");
-        } else if (tipo == 3) {
-            System.out.println("Digite a especificidade do hardware(RAM):");
-        } else if (tipo == 1) {
-            System.out.println("Digite a especificidade do hardware(Disco):");
-        }
+
+        System.out.println("Digite a especificidade do hardware:");
         String especificidade = leitor.nextLine();
 
         // Cadastrar o tipo de hardware
+        Integer idTipoHardware = cadastrarTipoHardware(con, conSer);
 
-        // Recuperar o ID do tipo de hardware recém-cadastrado
+        // Cadastrar o hardware no banco de dados MySQL
+        con.update("INSERT INTO hardware (fabricante, modelo, capacidade, especificidade, fkTipoHardware) VALUES (?, ?, ?, ?, ?)", fabricante, modelo, capacidade, especificidade, idTipoHardware);
 
-        // Cadastrar o hardware no banco de dados, incluindo fkTipoHardware
-        if (conexao.getDev()) {
-            con.update("INSERT INTO hardware (fabricante, modelo, capacidade, especificidade, fkTipoHardware) VALUES (?, ?, ?, ?, ?)", fabricante, modelo, capacidade, especificidade, tipo);
-        } else {
-            con.update("INSERT INTO hardware (fabricante, modelo, capacidade, especificidade, fkTipoHardware) VALUES (?, ?, ?, ?, ?)", fabricante, modelo, capacidade, especificidade, tipo);
-        }
-        // Recuperar o ID do hardware recém-cadastrado
-        Integer idHardware;
-        if (conexao.getDev()) {
-            idHardware = con.queryForObject("SELECT MAX(idHardware) FROM hardware", Integer.class);
-        } else {
-            idHardware = con.queryForObject("SELECT MAX(idHardware) FROM hardware", Integer.class);
-        }
+        // Cadastrar o hardware no banco de dados SQL Server
+        conSer.update("INSERT INTO hardware (fabricante, modelo, capacidade, especificidade, fkTipoHardware) VALUES (?, ?, ?, ?, ?)", fabricante, modelo, capacidade, especificidade, idTipoHardware);
+
+        // Recuperar o ID do hardware recém-cadastrado do MySQL
+        Integer idHardwareMySQL = con.queryForObject("SELECT MAX(idHardware) FROM hardware", Integer.class);
+
+        // Recuperar o ID do hardware recém-cadastrado do SQL Server
+        Integer idHardwareSQLServer = conSer.queryForObject("SELECT MAX(idHardware) FROM hardware", Integer.class);
+
         // Cadastrar componente
         System.out.println("Digite a porcentagem máxima para o componente (deixe em branco para usar o valor padrão):");
         String inputMax = leitor.nextLine();
@@ -514,12 +507,11 @@ public class AppHistorico {
             max = Integer.parseInt(inputMax);
         }
 
-        // Cadastrar o componente no banco de dados, incluindo fkTipoHardware
-        if (conexao.getDev()) {
-            con.update("INSERT INTO componente (max, fkMaquina, fkHardware) VALUES (?, ?, ?)", max, idMaquina, idHardware);
-        } else {
-            con.update("INSERT INTO componente (max, fkMaquina, fkHardware) VALUES (?, ?, ?)", max, idMaquina, idHardware);
-        }
+        // Cadastrar o componente no banco de dados MySQL
+        con.update("INSERT INTO componente (max, fkMaquina, fkHardware) VALUES (?, ?, ?)", max, idMaquina, idHardwareMySQL);
+
+        // Cadastrar o componente no banco de dados SQL Server
+        conSer.update("INSERT INTO componente (max, fkMaquina, fkHardware) VALUES (?, ?, ?)", max, idMaquina, idHardwareSQLServer);
 
         System.out.println("Hardware e componente cadastrados com sucesso!");
     }

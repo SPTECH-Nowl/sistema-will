@@ -4,16 +4,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Conexao {
 
-    private Boolean dev = false; // true = desenvolvimento(MYSQL) |--||--| false = produção(SQL)
+    private Boolean dev = true; // true = desenvolvimento(MYSQL) |--||--| false = produção(SQL)
     private JdbcTemplate conexaoDoBancoMySQL;
     private JdbcTemplate conexaoDoBancoSQLServer;
 
     public Conexao() {
-        if (dev) {
-            conexaoDoBancoMySQL = configurarConexaoMySQL();
-        } else {
-            conexaoDoBancoSQLServer = configurarConexaoSQLServer();
-        }
+//        if (!dev) {
+//        } else {
+//        }
+        conexaoDoBancoSQLServer = configurarConexaoSQLServer();
+        conexaoDoBancoMySQL = configurarConexaoMySQL();
     }
 
     private JdbcTemplate configurarConexaoMySQL() {
